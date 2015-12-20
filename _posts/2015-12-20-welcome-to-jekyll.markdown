@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "测试!"
+title:  "test!"
 date:   2015-12-20 22:09:47 +0800
 categories: jekyll update
 ---
