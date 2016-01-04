@@ -164,8 +164,9 @@ date:   2016-01-04 21:30:00 +0800
   mPhotoViewHolderDownloadHandlerThread.sendMessage(holder);
   {% endhighlight %} 
   
-  ### 源码应用
-  
+
+## 源码应用
+
   > 这一段逻辑广泛应用，见`android.os.Handler#post`的call hierarchy😀。
   ![hierarchy]({{site.url}}/assets/images/post_call_hierarchy.png)
 
