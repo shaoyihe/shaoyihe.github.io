@@ -1,6 +1,7 @@
 ---
 title:  "Android中Handler Looper源码解析"
 date:   2016-01-04 21:30:00 +0800
+tags: [Android]
 ---
 ## 问题来源
 
