@@ -69,6 +69,7 @@ Spring mvc按照MVC设计模式设计的框架，Model实体类传递给Controll
 				}
 			}
 		}
+
 	那么`handlerAdapters`是如何来的，阅读3。
 	下面就是`HandlerAdapter`执行逻辑并得到`ModelAndView`对象。中间穿插`HandlerExecutionChain`包含的拦截器。
 
@@ -85,6 +86,7 @@ Spring mvc按照MVC设计模式设计的框架，Model实体类传递给Controll
 
 		applyDefaultViewName(processedRequest, mv);
 		mappedHandler.applyPostHandle(processedRequest, response, mv);
+
 	下面就是页面渲染`processDispatchResult(processedRequest, response, mappedHandler, mv, dispatchException);`：
 		
 		private void processDispatchResult(HttpServletRequest request, HttpServletResponse response,
@@ -151,6 +153,7 @@ Spring mvc按照MVC设计模式设计的框架，Model实体类传递给Controll
 			}
 			return null;
 		}
+
 	基本逻辑是遍历`viewResolvers`，找到可以解决当前view的view，然后render请求。`viewResolvers`工作原理见7.
 	
 	
@@ -186,6 +189,7 @@ Spring mvc按照MVC设计模式设计的框架，Model实体类传递给Controll
 			public void init() {
 				registerBeanDefinitionParser("annotation-driven", new AnnotationDrivenBeanDefinitionParser());
 				...
+
 	再`org.springframework.web.servlet.config.AnnotationDrivenBeanDefinitionParser#parse`中进行基础配置，`HandlerMethod`相关的：
 	
 			public BeanDefinition parse(Element element, ParserContext parserContext) {
@@ -212,7 +216,8 @@ Spring mvc按照MVC设计模式设计的框架，Model实体类传递给Controll
 					beanNameMappingDef.getPropertyValues().add("corsConfigurations", corsConfigurationsRef);
 					parserContext.getRegistry().registerBeanDefinition(BEAN_NAME_URL_HANDLER_MAPPING_BEAN_NAME, beanNameMappingDef);
 					parserContext.registerComponent(new BeanComponentDefinition(beanNameMappingDef, BEAN_NAME_URL_HANDLER_MAPPING_BEAN_NAME));
-				}
+			}
+
 	
 	这里注册2个`org.springframework.web.servlet.HandlerMapping`的`Bean`：  
 	`org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping`：注册基于注解(`RequestMapping`和`Controller`)的Controller  
@@ -248,7 +253,7 @@ Spring mvc按照MVC设计模式设计的框架，Model实体类传递给Controll
 			}
 		
 
-		基本逻辑是：找到所有的`Bean对象`，如果`beanName`不以`SCOPED_TARGET_NAME_PREFIX`(scopedTarget)开始且`BeanType`有注解`Controller`或`RequestMapping`，则注册该`Bean`的`Handler Method`（`handlerMethodsInitialized`）：
+基本逻辑是：找到所有的`Bean对象`，如果`beanName`不以`SCOPED_TARGET_NAME_PREFIX`(scopedTarget)开始且`BeanType`有注解`Controller`或`RequestMapping`，则注册该`Bean`的`Handler Method`（`handlerMethodsInitialized`）：
 		
 			protected void detectHandlerMethods(final Object handler) {
 				Class<?> handlerType =
@@ -296,9 +301,11 @@ Spring mvc按照MVC设计模式设计的框架，Model实体类传递给Controll
 				return (requestMapping != null ? createRequestMappingInfo(requestMapping, condition) : null);
 			}
 		
-	遍历该`Bean`的所有方法，如果有注解`RequestMapping`，则为其封装为`RequestMappingInfo`对象，然后注册该方法到`mappingRegistry`。
 
-	- 获取`HandlerExecutionChain`：
+遍历该`Bean`的所有方法，如果有注解`RequestMapping`，则为其封装为`RequestMappingInfo`对象，然后注册该方法到`mappingRegistry`。
+
+- 获取`HandlerExecutionChain`：
+
 		
 			public final HandlerExecutionChain org.springframework.web.servlet.handler.AbstractHandlerMapping#getHandler(HttpServletRequest request) throws Exception {
 				Object handler = getHandlerInternal(request);
@@ -329,7 +336,9 @@ Spring mvc按照MVC设计模式设计的框架，Model实体类传递给Controll
 					HandlerMethod handlerMethod = lookupHandlerMethod(lookupPath, request);
 					return (handlerMethod != null ? handlerMethod.createWithResolvedBean() : null)
 				}
-		首先通过前面注册的`RequestMappingHandlerMapping`，调用它的`getHandler`，然后调用`getHandlerInternal`，从`mappingRegistry`中获取`HandlerMethod`（包括`Bean`及目标`Method`）.然后组合`HandlerMethod`和目标`HandlerInterceptor`为`HandlerExecutionChain`：
+
+首先通过前面注册的`RequestMappingHandlerMapping`，调用它的`getHandler`，然后调用`getHandlerInternal`，从`mappingRegistry`中获取`HandlerMethod`（包括`Bean`及目标`Method`）.然后组合`HandlerMethod`和目标`HandlerInterceptor`为`HandlerExecutionChain`：
+
 
 			protected HandlerExecutionChain getHandlerExecutionChain(Object handler, HttpServletRequest request) {
 				HandlerExecutionChain chain = (handler instanceof HandlerExecutionChain ?
@@ -415,6 +424,7 @@ Spring mvc按照MVC设计模式设计的框架，Model实体类传递给Controll
 	
 			return getModelAndView(mavContainer, modelFactory, webRequest);
 		}
+
 	封装`handlerMethod`为`ServletInvocableHandlerMethod`。复制参数（argumentResolvers和returnValueHandlers）。初始化`ModelAndViewContainer`（即包含Model和View的集合），最终调用`invokeAndHandle`方法。
 	
 		public void invokeAndHandle(ServletWebRequest webRequest,
@@ -513,6 +523,7 @@ Spring mvc按照MVC设计模式设计的框架，Model实体类传递给Controll
 			}
 			return null;
 		}
+
 	基本是循环遍历所有的`HandlerMethodReturnValueHandler`，然后找到第一个`supportsReturnType`的，然后实施`handleReturnValue`。
 	`returnValueHandlers`工作原理见5。
 
@@ -547,6 +558,7 @@ Spring mvc按照MVC设计模式设计的框架，Model实体类传递给Controll
 				resolvers.add(new MatrixVariableMethodArgumentResolver());
 				resolvers.add(new MatrixVariableMapMethodArgumentResolver());
 				...
+
 		下面选择`org.springframework.web.method.annotation.RequestParamMethodArgumentResolver`说明解决过程：
 	
 	-  RequestParamMethodArgumentResolver故名思议是解决`RequestParam`注解的参数。
@@ -566,6 +578,7 @@ Spring mvc按照MVC设计模式设计的框架，Model实体类传递给Controll
 				}
 				...
 			}		
+
 	`resolveName`方法获取参数实际值：
 
 			protected Object resolveName(String name, MethodParameter parameter, NativeWebRequest webRequest) throws Exception {
@@ -585,6 +598,7 @@ Spring mvc按照MVC设计模式设计的框架，Model实体类传递给Controll
 		
 				return arg;
 			}
+
 	基本就是从`HttpServletRequest`中获取值。
 5. `returnValueHandlers`工作原理
 	
@@ -619,6 +633,7 @@ Spring mvc按照MVC设计模式设计的框架，Model实体类传递给Controll
 				// Multi-purpose return value types
 				handlers.add(new ViewNameMethodReturnValueHandler());
 				handlers.add(new MapMethodProcessor());
+
 	预置大量的`ReturnValueHandler`，下面以`ViewNameMethodReturnValueHandler`和`RequestResponseBodyMethodProcessor`为例。
 	- `ViewNameMethodReturnValueHandler`：
 	支持返回类型为`Void`或者`CharSequence`,然后设置`ModelAndViewContainer`的·viewname`，见`org.springframework.web.servlet.mvc.method.annotation.ViewNameMethodReturnValueHandler`：
@@ -649,6 +664,7 @@ Spring mvc按照MVC设计模式设计的框架，Model实体类传递给Controll
 			protected boolean isRedirectViewName(String viewName) {
 				return (PatternMatchUtils.simpleMatch(this.redirectPatterns, viewName) || viewName.startsWith("redirect:"));
 			}
+
 	中间穿插了如果`returnValue`以"redirect:"开头，则视为页面跳转`setRedirectModelScenario`。完了，后面的页面渲染是给`org.springframework.web.servlet.ViewResolver`解决的。
 	- `org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor`  
 	此返回值处理器是响应没有页面需要渲染，直接返回给客户端，比如json，xml,字符串等格式。 支持返回包含注解`ResponseBody`，然后委托各种不同类型`HttpMessageConverter`处理：
@@ -715,16 +731,16 @@ Spring mvc按照MVC设计模式设计的框架，Model实体类传递给Controll
 	- 加载
 	在前面说到的`org.springframework.web.servlet.config.AnnotationDrivenBeanDefinitionParser#parse`中`RequestMappingHandlerAdapter`的初始化有`handlerAdapterDef.getPropertyValues().add("messageConverters", messageConverters);`的注入。
 
-		private ManagedList<?> getMessageConverters(Element element, Object source, ParserContext parserContext) {
-			Element convertersElement = DomUtils.getChildElementByTagName(element, "message-converters");
-			ManagedList<? super Object> messageConverters = new ManagedList<Object>();
-			if (convertersElement != null) {
-				messageConverters.setSource(source);
-				for (Element beanElement : DomUtils.getChildElementsByTagName(convertersElement, "bean", "ref")) {
-					Object object = parserContext.getDelegate().parsePropertySubElement(beanElement, null);
-					messageConverters.add(object);
+			private ManagedList<?> getMessageConverters(Element element, Object source, ParserContext parserContext) {
+				Element convertersElement = DomUtils.getChildElementByTagName(element, "message-converters");
+				ManagedList<? super Object> messageConverters = new ManagedList<Object>();
+				if (convertersElement != null) {
+					messageConverters.setSource(source);
+					for (Element beanElement : DomUtils.getChildElementsByTagName(convertersElement, "bean", "ref")) {
+						Object object = parserContext.getDelegate().parsePropertySubElement(beanElement, null);
+						messageConverters.add(object);
+					}
 				}
-			}
 	
 			if (convertersElement == null || Boolean.valueOf(convertersElement.getAttribute("register-defaults"))) {
 				messageConverters.setSource(source);
@@ -785,6 +801,7 @@ Spring mvc按照MVC设计模式设计的框架，Model实体类传递给Controll
 			this.messageConverters.add(new SourceHttpMessageConverter<Source>());
 			this.messageConverters.add(new AllEncompassingFormHttpMessageConverter());
 		}
+
 	预置的处理器都很简单，比如：  
 	`org.springframework.http.converter.StringHttpMessageConverter`：支持返回值为String,直接写该字符串到流中  
 	`org.springframework.http.converter.ByteArrayHttpMessageConverter`：支持返回值byte[]，写到response中
@@ -809,6 +826,7 @@ Spring mvc按照MVC设计模式设计的框架，Model实体类传递给Controll
 			}
 			...
 			}
+
 	本项目我们是明确配置的`viewResolver`：
 
 			<beans:bean
@@ -816,6 +834,7 @@ Spring mvc按照MVC设计模式设计的框架，Model实体类传递给Controll
 				<beans:property name="prefix" value="/WEB-INF/views/" />
 				<beans:property name="suffix" value=".jsp" />
 			</beans:bean>
+
 	`ViewResolver`有大量的子类，由于处理不同的引擎，比如：
 	`org.springframework.web.servlet.view.InternalResourceViewResolver`：jsp  
 	`org.springframework.web.servlet.view.velocity.VelocityViewResolver`: Velocity
@@ -848,6 +867,7 @@ Spring mvc按照MVC设计模式设计的框架，Model实体类传递给Controll
 				}
 				return view;
 			}
+
 		就是最终调用`buildView`，返回`org.springframework.web.servlet.view.velocity.VelocityView`。最终在`VelocityView`中：
 
 			protected void doRender(Context context, HttpServletResponse response) throws Exception {
@@ -872,4 +892,5 @@ Spring mvc按照MVC设计模式设计的框架，Model实体类传递给Controll
 							cause==null ? ex : cause);
 				}
 			}
+			
 		最终委托于`Velocity`的`merge`方法中。直接把渲染后的模板写到客户端。
