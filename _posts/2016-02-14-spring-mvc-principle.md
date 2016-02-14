@@ -4,8 +4,6 @@ date:   2016-02-14 17:20:00 +0800
 tags: [Spring mvc]
 ---
 
-##Spring mvc工作原理##
-
 ### 需要解决的问题
 Spring mvc按照MVC设计模式设计的框架，Model实体类传递给Controller，设置变量，返回给模板，渲染给客户端。  
 目标是简化开发流程，不需要大量重复的代码，不需要像servlet每个请求都要配置一个servlet，并需要手工管理request，response。以及DI,aop的介入，可以定制大量操作，比如`HandlerMethodReturnValueHandler`，定制特定通用返回值。
