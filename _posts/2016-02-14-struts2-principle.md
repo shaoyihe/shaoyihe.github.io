@@ -7,7 +7,7 @@ tags: [Strus2]
 # Strus2工作原理
 ---
 以[Struts2Example](/assets/file/Struts2Example.rar)为例。
-###入口
+### 入口
 ---
 Struts 2使用`Servlet`的`javax.servlet.Filter`拦截特性。对特定请求就行拦截处理直接对`ServletResponse`进行响应。典型配置是：
 
