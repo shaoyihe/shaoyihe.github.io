@@ -17,20 +17,19 @@ Spring mvc按照MVC设计模式设计的框架，Model实体类传递给Controll
 1. DispatcherServlet处理
    
    `Spring MVC`的典型入口配置是在`web.xml`中这样定义:
-
  
-	<servlet>
-		<servlet-name>appServlet</servlet-name>
-		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-		<init-param>
-			<param-name>contextConfigLocation</param-name>
-			<param-value>/WEB-INF/spring/appServlet/servlet-context.xml</param-value>
-		</init-param>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>appServlet</servlet-name>
-		<url-pattern>/</url-pattern>
-	</servlet-mapping>
+		<servlet>
+			<servlet-name>appServlet</servlet-name>
+			<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+			<init-param>
+				<param-name>contextConfigLocation</param-name>
+				<param-value>/WEB-INF/spring/appServlet/servlet-context.xml</param-value>
+			</init-param>
+		</servlet>
+		<servlet-mapping>
+			<servlet-name>appServlet</servlet-name>
+			<url-pattern>/</url-pattern>
+		</servlet-mapping>
 
 
 ​	`org.springframework.web.servlet.DispatcherServlet`继承于`javax.servlet.http.HttpServlet`，并没有什么特殊的，即该配置将所有请求委托与`DispatcherServlet`处理。  
