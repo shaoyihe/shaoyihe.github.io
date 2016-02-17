@@ -19,7 +19,7 @@ Spring mvc按照MVC设计模式设计的框架，Model实体类传递给Controll
    `Spring MVC`的典型入口配置是在`web.xml`中这样定义:
 
  
-<servlet>
+	<servlet>
 		<servlet-name>appServlet</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<init-param>
