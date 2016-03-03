@@ -1,0 +1,8 @@
+j2ee介绍：
+	j2ee是一系列技术标准的平台：servlet,jdbc,applet,jms,xml
+redis:
+	表映射
+	table:id 做hash
+	table:index 做 set映射到表id
+
+	目前是用于做一些配置项缓存（签到，活动，无抽奖活动提示语），统计工作（推送消息的成功情况）
