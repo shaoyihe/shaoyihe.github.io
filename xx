@@ -6,3 +6,104 @@ redis:
 	table:index 做 set映射到表id
 
 	目前是用于做一些配置项缓存（签到，活动，无抽奖活动提示语），统计工作（推送消息的成功情况）
+
+
+20160304:
+1、REST API的身份验证(oauth2 )
+2、interface不能用什么修饰 不考虑内部类情况下：Illegal modifier for the interface method a; only public & abstract are permitted
+3、js直接选择元素，创建元素
+	document.querySelector
+	document.querySelectorAll
+	document.createElement
+4、存储过程，函数，试图，表语句
+5、floor返回不大于的最大整数  round4舍5入的计算 ceil不小于他的最小整数
+6、数据库连接
+7、redis配置
+
+
+
+附  4、存储过程，函数，试图，表语句:
+--table staff
+create table staff (
+	id number,
+	name nvarchar2(50),
+	income number(10,2),
+	description nvarchar2(100)
+);
+
+alter table staff add constraint staff_id primary key(id);
+
+-- load test data
+create or replace procedure load_test_data(count_ number)
+is
+begin
+	for i in 1..count_ loop
+		insert into staff values(i, 'test' || i , 1000 * i , 'description' || i);
+	end loop;
+	commit;
+end;
+/
+
+begin
+load_test_data(100);
+end;
+/
+-- for after avg income view
+
+create or replace view staff_with_income_avg as
+	select *
+	 from staff
+	where income > (select avg(income) from staff) ;
+/
+
+-- query function for income - avg income
+
+create or replace function query_staff(id_ number)	return number
+is
+	result number(10,2);
+begin
+	
+	select income - (select avg(income) from staff) 
+	  into result
+	 from staff
+	where id = id_ ;
+
+	return result;
+end;
+/
+
+select a.*, query_staff(a.id)
+  from staff a;
+
+  
+--clear
+drop function query_staff;
+drop view staff_with_income_avg;
+drop procedure load_test_data;
+drop table staff;
+
+
+附6、数据库连接
+Class.forName("oracle.jdbc.driver.OracleDriver");
+oracle_conn = DriverManager.getConnection("jdbc:oracle:thin:@192.168.0.215:1521:orcl", "username", "password");
+
+oracle_stmt = oracle_conn.createStatement();
+
+Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+mssql_conn = DriverManager.getConnection("jdbc:sqlserver://192.168.0.213:1433;DatabaseName=VIS", "username", "password");
+
+mssql_stmt = mssql_conn.createStatement();
+mssql_rs = mssql_stmt.executeQuery("select * from VideoBaseInfo");
+
+while(mssql_rs.next()) {
+	System.out.println("正在插入VideoId：" + mssql_rs.getInt("VideoId") + "的记录...");
+	oracle_stmt.executeUpdate("insert into VIDEO_BASEINFO values(" 
+			+ mssql_rs.getInt("VideoId") + ",'"
+			+ mssql_rs.getString("VideoName") + "','"
+			+ mssql_rs.getString("VideoVersion") + "',"
+			+ mssql_rs.getInt("VideoMp4Items") + ","
+			+ mssql_rs.getInt("VideoRmvbItems") + ",'"
+			+ mssql_rs.getString("VideoAliasName") + "','"
+			+ mssql_rs.getString("VideoAge") + "'"
+			+ ")");
+}
